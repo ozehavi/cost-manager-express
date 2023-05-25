@@ -7,7 +7,7 @@ const router = express.Router();
 const CONNECTION = process.env.CONNECTION;
 
 // Connect to the MongoDB database
-mongoose.connect(CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://ozehavi:Orenz123@cluster0.8pqq64f.mongodb.net/addcost?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.log('Error connecting to MongoDB', err));
 
