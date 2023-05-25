@@ -1,16 +1,11 @@
-const { uuid } = require('uuidv4');
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const CATEGORIES = ['food', 'health', 'housing', 'sport', 'education', 'transportation', 'other'];
-// Connect to the MongoDB database
-mongoose.connect('mongodb+srv://ozehavi:Orenz123@cluster0.8pqq64f.mongodb.net/addcost?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.log('Error connecting to MongoDB', err));
 
 // Define the cost schema using Mongoose
 const costSchema = new mongoose.Schema({
-  id: String,
+  id: Number,
   user_id: Number,
   year: Number,
   month: Number,
@@ -32,11 +27,12 @@ router.post('/', function(req, res, next) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
 
+
     //ToDo: need to check if the user_id is found in the users collection
     //ToDo: validate user_id
 
     const newCost = new Cost({
-      id: uuid(), // generating a unique id
+      id: generateNumericUUID(), // generating a unique id
       user_id: user_id,
       year: year,
       month: month,
@@ -56,5 +52,26 @@ router.post('/', function(req, res, next) {
   }
 
 });
+
+function generateNumericUUID() {
+  // String containing all possible digits
+  const chars = '0123456789';
+  let uuid = '';
+
+  // Generate a 32-character UUID
+  for (let i = 0; i < 32; i++) {
+    // Generate a random index to select a digit from the chars string
+    const randomNumber = Math.floor(Math.random() * chars.length);
+    // Append the selected digit to the UUID
+    uuid += chars[randomNumber];
+  }
+
+  return uuid;
+}
+
+function validateParams(){
+  //ToDo: add all validation here
+}
+
 
 module.exports = router;
