@@ -1,3 +1,4 @@
+const { uuid } = require('uuidv4');
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
@@ -9,6 +10,7 @@ mongoose.connect('mongodb+srv://ozehavi:Orenz123@cluster0.8pqq64f.mongodb.net/ad
 
 // Define the cost schema using Mongoose
 const costSchema = new mongoose.Schema({
+  id: String,
   user_id: Number,
   year: Number,
   month: Number,
@@ -20,11 +22,6 @@ const costSchema = new mongoose.Schema({
 
 // Create a Cost model based on the cost schema
 const Cost = mongoose.model('Cost', costSchema);
-
-/* GET addcost page. */
-router.get('/', function(req, res, next) {
-  res.render('addcost', { title: 'addcost' });
-});
 
 router.post('/', function(req, res, next) {
   try {
@@ -39,6 +36,7 @@ router.post('/', function(req, res, next) {
     //ToDo: validate user_id
 
     const newCost = new Cost({
+      id: uuid(), // generating a unique id
       user_id: user_id,
       year: year,
       month: month,
@@ -54,7 +52,7 @@ router.post('/', function(req, res, next) {
     res.status(200).json(newCost);
   } catch (err) {
     // Handle any errors that occur during the retrieval process
-    res.status(500).send(err);
+    res.status(500).json({error:err});
   }
 
 });
