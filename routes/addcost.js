@@ -18,18 +18,40 @@ const costSchema = new mongoose.Schema({
 // Create a Cost model based on the cost schema
 const Cost = mongoose.model('Cost', costSchema);
 
-router.post('/', function(req, res, next) {
+// Define the cost schema using Mongoose
+const userSchema = new mongoose.Schema({
+  id: Number,
+  first_name: String,
+  last_name: String,
+  birthday: String,
+});
+
+// Create a Cost model based on the cost schema
+const User = mongoose.model('User', userSchema);
+
+// Function to check if user_id exists in the users collection
+async function checkUserExistence(user_id) {
   try {
-    const { user_id, year, month, day, description, category, sum } = req.body;
+    // Query the users collection to check if the user_id exists
+    return await User.exists({ id: user_id });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+router.post('/', async function (req, res, next) {
+  try {
+    const {user_id, year, month, day, description, category, sum} = req.body;
 
     // Check if any of the parameters are empty
     if (!user_id || !year || !month || !day || !description || !category || !sum) {
-      return res.status(400).json({ error: 'Missing parameters' });
+      return res.status(400).json({error: 'Missing parameters'});
     }
 
-
-    //ToDo: need to check if the user_id is found in the users collection
-    //ToDo: validate user_id
+    const userExists = await checkUserExistence(user_id);
+    if(!userExists)
+      return res.status(400).json({error: 'user_id not found'});
 
     const newCost = new Cost({
       id: generateNumericUUID(), // generating a unique id
@@ -48,7 +70,7 @@ router.post('/', function(req, res, next) {
     res.status(200).json(newCost);
   } catch (err) {
     // Handle any errors that occur during the retrieval process
-    res.status(500).json({error:err});
+    res.status(500).json({error: err});
   }
 
 });
