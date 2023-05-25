@@ -1,10 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-dotenv.config();
-
 const router = express.Router();
-const CONNECTION = process.env.CONNECTION;
 
 // Connect to the MongoDB database
 mongoose.connect('mongodb+srv://ozehavi:Orenz123@cluster0.8pqq64f.mongodb.net/addcost?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -25,13 +21,6 @@ const Developer = mongoose.model('Developer', developerSchema);
 /* GET about page. */
 router.get('/', async function(req, res, next) {
     try {
-        const newDev = new Developer({
-            firstname: "o",
-            lastname: "s",
-            id: 234,
-            email: "emaifal"
-        })
-        newDev.save();
 
         // Retrieve all developers from the MongoDB collection
         const developers = await Developer.find();

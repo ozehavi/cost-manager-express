@@ -1,7 +1,25 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const CATEGORIES = ['food', 'health', 'housing', 'sport', 'education', 'transportation', 'other'];
+// Connect to the MongoDB database
+mongoose.connect('mongodb+srv://ozehavi:Orenz123@cluster0.8pqq64f.mongodb.net/addcost?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.log('Error connecting to MongoDB', err));
 
+// Define the cost schema using Mongoose
+const costSchema = new mongoose.Schema({
+  user_id: Number,
+  year: Number,
+  month: Number,
+  day: Number,
+  description: String,
+  category: String,
+  sum: Number
+});
+
+// Create a Cost model based on the cost schema
+const Cost = mongoose.model('Cost', costSchema);
 
 /* GET addcost page. */
 router.get('/', function(req, res, next) {
@@ -17,9 +35,9 @@ router.post('/', function(req, res, next) {
   }
 
   //ToDo: need to check if the user_id is found in the users collection
+  //ToDo: validate user_id
 
-  // Assuming you have the data you want to send as JSON in the following format
-  const jsonData = {
+  const newCost = new Cost({
     user_id: user_id,
     year: year,
     month: month,
@@ -27,10 +45,12 @@ router.post('/', function(req, res, next) {
     description: description,
     category: category,
     sum: sum
-  };
+  });
+
+  newCost.save();
 
   // Send the JSON data as the response
-  res.status(200).json(jsonData);
+  res.status(200).json(newCost);
 });
 
 module.exports = router;
