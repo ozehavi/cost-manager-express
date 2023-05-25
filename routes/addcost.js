@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const {CATEGORIES} = require("../index");
 const router = express.Router();
-const CATEGORIES = ['food', 'health', 'housing', 'sport', 'education', 'transportation', 'other'];
 
 // Define the cost schema using Mongoose
 const costSchema = new mongoose.Schema({
@@ -38,6 +38,37 @@ async function checkUserExistence(user_id) {
     console.error(error);
   }
 }
+// Validates all params
+async function validateParams(user_id, year, month, day, description, category, sum) {
+  //ToDo: validate year, month
+  return [
+    !user_id && 'user_id parameter is missing',
+    !year && 'year parameter is missing',
+    !month && 'month parameter is missing',
+    !day && 'day parameter is missing',
+    !description && 'description parameter is missing',
+    !category && 'category parameter is missing',
+    !sum && 'sum parameter is missing',
+    !(await checkUserExistence(user_id)) && 'user_id not found',
+    !CATEGORIES.includes(category) && `category ${category} is not valid`
+  ].filter(Boolean);
+}
+
+function generateNumericUUID() {
+  // String containing all possible digits
+  const chars = '0123456789';
+  let uuid = '';
+
+  // Generate a 32-character UUID
+  for (let i = 0; i < 32; i++) {
+    // Generate a random index to select a digit from the chars string
+    const randomNumber = Math.floor(Math.random() * chars.length);
+    // Append the selected digit to the UUID
+    uuid += chars[randomNumber];
+  }
+
+  return uuid;
+}
 
 
 router.post('/', async function (req, res, next) {
@@ -45,13 +76,11 @@ router.post('/', async function (req, res, next) {
     const {user_id, year, month, day, description, category, sum} = req.body;
 
     // Check if any of the parameters are empty
-    if (!user_id || !year || !month || !day || !description || !category || !sum) {
-      return res.status(400).json({error: 'Missing parameters'});
+    const errors = await validateParams(user_id, year, month, day, description, category, sum);
+    if (errors.length > 0) {
+      return res.status(400).json({errors: errors.join(' ,')});
     }
 
-    const userExists = await checkUserExistence(user_id);
-    if(!userExists)
-      return res.status(400).json({error: 'user_id not found'});
 
     const newCost = new Cost({
       id: generateNumericUUID(), // generating a unique id
@@ -74,26 +103,5 @@ router.post('/', async function (req, res, next) {
   }
 
 });
-
-function generateNumericUUID() {
-  // String containing all possible digits
-  const chars = '0123456789';
-  let uuid = '';
-
-  // Generate a 32-character UUID
-  for (let i = 0; i < 32; i++) {
-    // Generate a random index to select a digit from the chars string
-    const randomNumber = Math.floor(Math.random() * chars.length);
-    // Append the selected digit to the UUID
-    uuid += chars[randomNumber];
-  }
-
-  return uuid;
-}
-
-function validateParams(){
-  //ToDo: add all validation here
-}
-
 
 module.exports = router;

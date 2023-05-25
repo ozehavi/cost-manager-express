@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
+
+function validateParams(user_id, year, mont){
+    //ToDo: validate year, month
+    //ToDo: validate user_id
+}
+
 /* GET report page. */
 router.get('/', function(req, res, next) {
     const { user_id, year, month } = req.body;

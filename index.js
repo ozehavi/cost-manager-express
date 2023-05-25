@@ -1,5 +1,4 @@
 // Import packages
-const UUID = require('uuid-int')
 const express = require("express");
 const mongoose = require("mongoose");
 const homeRouter = require('./routes/home');
@@ -7,12 +6,7 @@ const addCostRouter = require('./routes/addcost');
 const reportRouter = require('./routes/report');
 const aboutRouter = require('./routes/about');
 
-const id = 0;
-
-const generator = UUID(id);
-
-const uuid = generator.uuid();
-console.log(uuid);
+export const CATEGORIES = ['food', 'health', 'housing', 'sport', 'education', 'transportation', 'other'];
 
 // Middlewares
 const app = express();
