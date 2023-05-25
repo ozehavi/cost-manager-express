@@ -27,30 +27,36 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-  const { user_id, year, month, day, description, category, sum } = req.body;
+  try {
+    const { user_id, year, month, day, description, category, sum } = req.body;
 
-  // Check if any of the parameters are empty
-  if (!user_id || !year || !month || !day || !description || !category || !sum) {
-    return res.status(400).json({ error: 'Missing parameters' });
+    // Check if any of the parameters are empty
+    if (!user_id || !year || !month || !day || !description || !category || !sum) {
+      return res.status(400).json({ error: 'Missing parameters' });
+    }
+
+    //ToDo: need to check if the user_id is found in the users collection
+    //ToDo: validate user_id
+
+    const newCost = new Cost({
+      user_id: user_id,
+      year: year,
+      month: month,
+      day: day,
+      description: description,
+      category: category,
+      sum: sum
+    });
+
+    newCost.save();
+
+    // Send the JSON data as the response
+    res.status(200).json(newCost);
+  } catch (err) {
+    // Handle any errors that occur during the retrieval process
+    res.status(500).send(err);
   }
 
-  //ToDo: need to check if the user_id is found in the users collection
-  //ToDo: validate user_id
-
-  const newCost = new Cost({
-    user_id: user_id,
-    year: year,
-    month: month,
-    day: day,
-    description: description,
-    category: category,
-    sum: sum
-  });
-
-  newCost.save();
-
-  // Send the JSON data as the response
-  res.status(200).json(newCost);
 });
 
 module.exports = router;
