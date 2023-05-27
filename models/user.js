@@ -16,24 +16,6 @@ const userSchema = new mongoose.Schema({
 // Create a User model based on the user schema
 const User = mongoose.model('User', userSchema);
 
-// Define the cost schema using Mongoose
-const costSchema = new mongoose.Schema({
-    id: Number,
-    user_id: Number,
-    year: Number,
-    month: Number,
-    day: Number,
-    description: String,
-    category: String,
-    sum: Number
-});
-
-// Create a Cost model based on the cost schema
-const Cost = mongoose.model('Cost', costSchema);
-
 module.exports = {
-    userSchema,
-    User,
-    costSchema,
-    Cost
+    User
 }

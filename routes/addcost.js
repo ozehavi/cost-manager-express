@@ -6,7 +6,7 @@ Ilya Yaverbaum ID: 324516673
 const express = require('express');
 const router = express.Router();
 const { isValidDate, checkUserExistence } = require('../utils');
-const {Cost} = require("../models");
+const {Cost} = require("../models/cost");
 
 // Validates all params
 async function validateParams(user_id, year, month, day, description, category, sum) {

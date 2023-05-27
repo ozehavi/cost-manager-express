@@ -3,7 +3,7 @@ Developers:
 Oren Zehavi ID: 315940429
 Ilya Yaverbaum ID: 324516673
 */
-const { User } = require('./models');
+const { User } = require('./models/user');
 async function checkUserExistence(user_id) {
     try {
         // Query the users collection to check if the user_id exists
