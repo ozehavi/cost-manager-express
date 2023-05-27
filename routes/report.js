@@ -1,10 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const {Cost} = require("../models");
+const {checkUserExistence} = require("../utils");
 
-function validateParams(user_id, year, month){
-    //ToDo: validate year, month
-    //ToDo: validate user_id
+async function validateParams(user_id, year, month) {
+    const validYear = year > 1900 && year < 2050;
+    const validMonth =  month > 0 && month < 13;
+    return [
+        !user_id && 'user_id parameter is missing',
+        !year && 'year parameter is missing',
+        !month && 'month parameter is missing',
+        !validMonth && 'month is not valid',
+        !validYear && 'year is not valid',
+        !(await checkUserExistence(user_id)) && 'user_id not found'
+    ].filter(Boolean);
 }
 
 /* GET report page. */
@@ -12,11 +21,13 @@ router.get('/', async function(req, res, next) {
     try{
         const { user_id, year, month } = req.body;
 
-        // Check if any of the parameters are empty
-        if (!user_id || !year || !month) {
-            return res.status(400).json({ error: 'Missing parameters' });
+        // Check if any of the parameters are not empty and valid
+        const errors = await validateParams(user_id, year, month);
+        if (errors.length > 0) {
+            return res.status(400).json({errors: errors.join(' ,')});
         }
 
+        // we want to query using those values
         const query = {
             year: year,
             month: month,

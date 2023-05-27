@@ -39,7 +39,7 @@ router.post('/', async function (req, res, next) {
   try {
     const {user_id, year, month, day, description, category, sum} = req.body;
 
-    // Check if any of the parameters are empty
+    // Check if any of the parameters are not empty and valid
     const errors = await validateParams(user_id, year, month, day, description, category, sum);
     if (errors.length > 0) {
       return res.status(400).json({errors: errors.join(' ,')});
