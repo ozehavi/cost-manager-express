@@ -1,16 +1,4 @@
-const mongoose = require('mongoose');
-
-// Define the cost schema using Mongoose
-const userSchema = new mongoose.Schema({
-    id: Number,
-    first_name: String,
-    last_name: String,
-    birthday: String,
-});
-
-// Create a Cost model based on the cost schema
-const User = mongoose.model('User', userSchema);
-
+const { User } = require('./models');
 async function checkUserExistence(user_id) {
     try {
         // Query the users collection to check if the user_id exists
