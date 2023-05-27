@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 
-function validateParams(user_id, year, mont){
+function validateParams(user_id, year, month){
     //ToDo: validate year, month
     //ToDo: validate user_id
 }

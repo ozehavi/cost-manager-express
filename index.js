@@ -7,6 +7,7 @@ const reportRouter = require('./routes/report');
 const aboutRouter = require('./routes/about');
 
 global.categories = ['food', 'health', 'housing', 'sport', 'education', 'transportation', 'other'];
+
 // Middlewares
 const app = express();
 app.use(express.json());
