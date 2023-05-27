@@ -19,7 +19,7 @@ async function validateParams(user_id, year, month, day, description, category, 
     !category && 'category parameter is missing',
     !sum && 'sum parameter is missing',
     !(await checkUserExistence(user_id)) && 'user_id not found',
-    !global.categories.includes(category) && `category ${category} is not valid`,
+    !global.CATEGORIES.includes(category) && `category ${category} is not valid`,
     !isValidDate(year, month, day) && 'date is not valid'
   ].filter(Boolean);
 }
