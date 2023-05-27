@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const {CATEGORIES} = require("../index");
 const router = express.Router();
 
 // Define the cost schema using Mongoose
@@ -50,7 +49,7 @@ async function validateParams(user_id, year, month, day, description, category, 
     !category && 'category parameter is missing',
     !sum && 'sum parameter is missing',
     !(await checkUserExistence(user_id)) && 'user_id not found',
-    !CATEGORIES.includes(category) && `category ${category} is not valid`
+    !global.categories.includes(category) && `category ${category} is not valid`
   ].filter(Boolean);
 }
 
