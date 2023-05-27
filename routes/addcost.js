@@ -37,9 +37,28 @@ async function checkUserExistence(user_id) {
     console.error(error);
   }
 }
+
+
+function isValidDate(year, month, day) {
+  if(year > 2050 || year < 1900)
+    return false;
+
+  // Create a new Date object using the provided values
+  const date = new Date(year, month - 1, day);
+
+  // Check if the Date object's month, day, and year values match the provided values
+  // Also, check if the Date object's month value is equal to the provided month minus 1
+  // This is because the month parameter in the Date constructor is zero-based (0 - January, 1 - February, etc.)
+  return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+  );
+}
+
+
 // Validates all params
 async function validateParams(user_id, year, month, day, description, category, sum) {
-  //ToDo: validate year, month
   return [
     !user_id && 'user_id parameter is missing',
     !year && 'year parameter is missing',
@@ -49,7 +68,8 @@ async function validateParams(user_id, year, month, day, description, category, 
     !category && 'category parameter is missing',
     !sum && 'sum parameter is missing',
     !(await checkUserExistence(user_id)) && 'user_id not found',
-    !global.categories.includes(category) && `category ${category} is not valid`
+    !global.categories.includes(category) && `category ${category} is not valid`,
+    !isValidDate(year, month, day) && 'date is not valid'
   ].filter(Boolean);
 }
 
@@ -58,15 +78,14 @@ function generateNumericUUID() {
   const chars = '0123456789';
   let uuid = '';
 
-  // Generate a 32-character UUID
-  for (let i = 0; i < 32; i++) {
+  // Generate a 22-character UUID
+  for (let i = 0; i < 22; i++) {
     // Generate a random index to select a digit from the chars string
     const randomNumber = Math.floor(Math.random() * chars.length);
     // Append the selected digit to the UUID
     uuid += chars[randomNumber];
   }
-
-  return uuid;
+  return parseInt(uuid);
 }
 
 
@@ -79,7 +98,6 @@ router.post('/', async function (req, res, next) {
     if (errors.length > 0) {
       return res.status(400).json({errors: errors.join(' ,')});
     }
-
 
     const newCost = new Cost({
       id: generateNumericUUID(), // generating a unique id
