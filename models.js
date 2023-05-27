@@ -1,3 +1,8 @@
+/*
+Developers:
+Oren Zehavi ID: 315940429
+Ilya Yaverbaum ID: 324516673
+*/
 const mongoose = require('mongoose');
 
 // Define the user schema using Mongoose

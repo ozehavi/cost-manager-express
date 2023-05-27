@@ -1,3 +1,8 @@
+/*
+Developers:
+Oren Zehavi ID: 315940429
+Ilya Yaverbaum ID: 324516673
+*/
 const { User } = require('./models');
 async function checkUserExistence(user_id) {
     try {
