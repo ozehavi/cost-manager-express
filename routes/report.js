@@ -63,9 +63,13 @@ router.get('/', async function(req, res, next) {
 
         const existingReport = await getExistingReport(month, year);
         // if can find an existing report we will return it.
-        if(existingReport && existingReport.length > 0)
+        if(existingReport && existingReport.length > 0) {
+            // remove year and month properties from the report as they are using only for query
+            delete existingReport['month'];
+            delete existingReport['year'];
             // Send the JSON data as the response
             return res.status(200).json(existingReport);
+        }
 
         console.log("Could not find an existing report. Creating a new one...");
 
