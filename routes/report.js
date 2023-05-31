@@ -28,7 +28,8 @@ async function getExistingReport(month, year) {
         year: year,
         month: month
     };
-    return CostReport.find(query);
+    // we don't want to return __v, _id, month, year
+    return CostReport.find(query, { __v: 0, _id:0, month:0, year:0 });
 }
 
 function saveExistingReport(reportJson, month, year){

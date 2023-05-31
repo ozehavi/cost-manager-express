@@ -73,7 +73,7 @@ router.post('/', async function (req, res, next) {
       return res.status(400).json({errors: errors.join(' ,')});
     }
 
-    const newCost = new Cost({
+    let newCost = new Cost({
       id: generateNumericUUID(), // generating a unique id
       user_id: user_id,
       year: year,
@@ -84,7 +84,7 @@ router.post('/', async function (req, res, next) {
       sum: sum
     });
 
-    newCost.save()
+    await newCost.save()
         .then(() => {
           console.log('new cost saved successfully.');
         })
@@ -93,6 +93,9 @@ router.post('/', async function (req, res, next) {
         });
 
     deleteExistingReport(newCost);
+
+    // remove __v and _id from response
+    newCost = newCost.toJSON({ versionKey: false, transform: function (doc, ret) {delete ret._id;}});
 
     // Send the JSON data as the response
     res.status(200).json(newCost);
