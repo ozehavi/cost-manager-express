@@ -15,9 +15,9 @@ async function validateParams(user_id, year, month) {
         !user_id && 'user_id parameter is missing',
         !year && 'year parameter is missing',
         !month && 'month parameter is missing',
-        !validMonth && 'month is not valid',
-        !validYear && 'year is not valid',
-        !(await checkUserExistence(user_id)) && 'user_id not found'
+        month && !validMonth && 'month is not valid',
+        year && !validYear && 'year is not valid',
+        user_id && !(await checkUserExistence(user_id)) && 'user_id not found'
     ].filter(Boolean);
 }
 
