@@ -10,16 +10,24 @@ const {Cost} = require("../models/cost");
 const {CostReport} = require("../models/costReport");
 
 // Validates all params
-async function validateParams(user_id, year, month, day, description, category, sum) {
+async function validateParams(userId, year, month, day, description, category, sum) {
+  // converting relevant parameters to number and later validate them
+  userId = parseInt(userId);
+  year = parseInt(year);
+  month = parseInt(month);
+  day = parseInt(day);
+  sum = parseInt(sum);
+
+  // validating params, will return an array of errors
   return [
-    !user_id && 'user_id parameter is missing',
-    !year && 'year parameter is missing',
-    !month && 'month parameter is missing',
-    !day && 'day parameter is missing',
+    !userId && 'user_id parameter is missing or not a number',
+    !year && 'year parameter is missing or not a number',
+    !month && 'month parameter is missing or not a number',
+    !day && 'day parameter is missing or not a number',
     !description && 'description parameter is missing',
     !category && 'category parameter is missing',
-    !sum && 'sum parameter is missing',
-    user_id && !(await checkUserExistence(user_id)) && 'user_id not found',
+    !sum && 'sum parameter is missing or not a number',
+    userId && !(await checkUserExistence(userId)) && 'userId not found',
     category && !global.CATEGORIES.includes(category) && `category ${category} is not valid`,
     day && month && year && !isValidDate(year, month, day) && 'date is not valid',
       sum && typeof sum !== 'number' && 'sum must be a number'
@@ -53,7 +61,7 @@ function generateNumericUUID() {
   let uuid = '';
 
   // Generate a 22-character UUID
-  for (let i = 0; i < 22; i++) {
+  for (let i = 0; i < 20; i++) {
     // Generate a random index to select a digit from the chars string
     const randomNumber = Math.floor(Math.random() * chars.length);
     // Append the selected digit to the UUID

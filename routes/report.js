@@ -8,17 +8,18 @@ const router = express.Router();
 const {Cost} = require("../models/cost");
 const {checkUserExistence} = require("../utils");
 const {CostReport} = require("../models/costReport");
+const url = require('url');
 
-async function validateParams(user_id, year, month) {
+async function validateParams(userId, year, month) {
     const validYear = year > 1900 && year < 2050;
     const validMonth =  month > 0 && month < 13;
     return [
-        !user_id && 'user_id parameter is missing',
-        !year && 'year parameter is missing',
-        !month && 'month parameter is missing',
+        !userId && 'userId parameter is missing or not a number',
+        !year && 'year parameter is missing or not a number',
+        !month && 'month parameter is missing or not a number',
         month && !validMonth && 'month is not valid',
         year && !validYear && 'year is not valid',
-        user_id && !(await checkUserExistence(user_id)) && 'user_id not found'
+        userId && !(await checkUserExistence(userId)) && 'userId not found'
     ].filter(Boolean);
 }
 
@@ -34,10 +35,12 @@ async function getExistingReport(month, year) {
 
 function saveExistingReport(reportJson, month, year){
     try {
+        // creating a copy of the report Json
+        const report = {...reportJson};
         // adding month & year to report Json in order to be able to query by them
-        reportJson['month'] = month;
-        reportJson['year'] = year;
-        const newCostReport = new CostReport(reportJson);
+        report['month'] = month;
+        report['year'] = year;
+        const newCostReport = new CostReport(report);
 
         newCostReport.save()
             .then(() => {
@@ -54,10 +57,15 @@ function saveExistingReport(reportJson, month, year){
 /* GET report page. */
 router.get('/', async function(req, res, next) {
     try{
-        const { user_id, year, month } = req.body;
+
+        const queryParameters = url.parse(req.url, true).query;
+        // Convert and validate the parameters
+        const userId = parseInt(queryParameters.user_id);
+        const year = parseInt(queryParameters.year);
+        const month = parseInt(queryParameters.month);
 
         // Check if any of the parameters are not empty and valid
-        const errors = await validateParams(user_id, year, month);
+        const errors = await validateParams(userId, year, month);
         if (errors.length > 0) {
             return res.status(400).json({errors: errors.join(' ,')});
         }
@@ -75,7 +83,7 @@ router.get('/', async function(req, res, next) {
         const query = {
             year: year,
             month: month,
-            user_id: user_id
+            user_id: userId
         };
 
         const costData = await Cost.find(query, { __v: 0, _id:0, month:0, year:0 });

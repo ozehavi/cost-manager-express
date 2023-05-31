@@ -4,10 +4,10 @@ Oren Zehavi ID: 315940429
 Ilya Yaverbaum ID: 324516673
 */
 const { User } = require('./models/user');
-async function checkUserExistence(user_id) {
+async function checkUserExistence(userId) {
     try {
         // Query the users collection to check if the user_id exists
-        return await User.exists({ id: user_id });
+        return await User.exists({ id: userId });
     } catch (error) {
         console.error(error);
     }
