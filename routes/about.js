@@ -21,9 +21,8 @@ const Developer = mongoose.model('Developer', developerSchema);
 /* GET about page. */
 router.get('/', async function(req, res, next) {
     try {
-
         // Retrieve all developers from the MongoDB collection
-        const developers = await Developer.find();
+        const developers = await Developer.find({}, { _id:0 });
 
         // Send the developers as a response
         res.send(developers);
