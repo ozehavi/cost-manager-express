@@ -65,11 +65,8 @@ router.get('/', async function(req, res, next) {
         const existingReport = await getExistingReport(month, year);
         // if can find an existing report we will return it.
         if(existingReport && existingReport.length > 0) {
-            // remove year and month properties from the report as they are using only for query
-            delete existingReport['month'];
-            delete existingReport['year'];
-            // Send the JSON data as the response
-            return res.status(200).json(existingReport);
+            // Send the JSON data as the response -getting more than one report is not possible but anyway we get the first one
+            return res.status(200).json(existingReport[0]);
         }
 
         console.log("Could not find an existing report. Creating a new one...");
@@ -81,7 +78,7 @@ router.get('/', async function(req, res, next) {
             user_id: user_id
         };
 
-        const costData = await Cost.find(query);
+        const costData = await Cost.find(query, { __v: 0, _id:0, month:0, year:0 });
 
         // create a report json and pre enter all categories arrays
         const report = {};
