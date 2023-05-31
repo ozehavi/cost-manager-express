@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { isValidDate, checkUserExistence } = require('../utils');
 const {Cost} = require("../models/cost");
+const {CostReport} = require("../models/costReport");
 
 // Validates all params
 async function validateParams(user_id, year, month, day, description, category, sum) {
@@ -18,10 +19,31 @@ async function validateParams(user_id, year, month, day, description, category, 
     !description && 'description parameter is missing',
     !category && 'category parameter is missing',
     !sum && 'sum parameter is missing',
-    !(await checkUserExistence(user_id)) && 'user_id not found',
-    !global.CATEGORIES.includes(category) && `category ${category} is not valid`,
-    !isValidDate(year, month, day) && 'date is not valid'
+    user_id && !(await checkUserExistence(user_id)) && 'user_id not found',
+    category && !global.CATEGORIES.includes(category) && `category ${category} is not valid`,
+    day && month && year && !isValidDate(year, month, day) && 'date is not valid'
   ].filter(Boolean);
+}
+
+function deleteExistingReport(newCost){
+  try {
+    const query = {
+      year: newCost.year,
+      month: newCost.month
+    };
+
+    // Find and delete documents based on the query (we could use deleteOne but just in case of multiplications)
+    CostReport.deleteMany(query)
+        .then(() => {
+          console.log('cost report deleted successfully.');
+        })
+        .catch((error) => {
+          console.error('Error deleting cost report:', error.message);
+        });
+
+  } catch (error) {
+    console.error('Error deleting documents:', error);
+  }
 }
 
 function generateNumericUUID() {
@@ -61,7 +83,15 @@ router.post('/', async function (req, res, next) {
       sum: sum
     });
 
-    newCost.save();
+    newCost.save()
+        .then(() => {
+          console.log('new cost saved successfully.');
+        })
+        .catch((error) => {
+          console.error('Error saving new cost:', error.message);
+        });
+
+    deleteExistingReport(newCost);
 
     // Send the JSON data as the response
     res.status(200).json(newCost);

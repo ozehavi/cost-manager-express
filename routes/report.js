@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const {Cost} = require("../models/cost");
 const {checkUserExistence} = require("../utils");
+const {CostReport} = require("../models/costReport");
 
 async function validateParams(user_id, year, month) {
     const validYear = year > 1900 && year < 2050;
@@ -21,6 +22,34 @@ async function validateParams(user_id, year, month) {
     ].filter(Boolean);
 }
 
+async function getExistingReport(month, year) {
+    //we want to query using those values
+    const query = {
+        year: year,
+        month: month
+    };
+    return CostReport.find(query);
+}
+
+function saveExistingReport(reportJson, month, year){
+    try {
+        // adding month & year to report Json in order to be able to query by them
+        reportJson['month'] = month;
+        reportJson['year'] = year;
+        const newCostReport = new CostReport(reportJson);
+
+        newCostReport.save()
+            .then(() => {
+                console.log('Report saved successfully.');
+            })
+            .catch((error) => {
+                console.error('Error saving report:', error.message);
+            });
+    } catch (error) {
+        console.error('Error saving existing report:', error);
+    }
+}
+
 /* GET report page. */
 router.get('/', async function(req, res, next) {
     try{
@@ -32,6 +61,14 @@ router.get('/', async function(req, res, next) {
             return res.status(400).json({errors: errors.join(' ,')});
         }
 
+        const existingReport = await getExistingReport(month, year);
+        // if can find an existing report we will return it.
+        if(existingReport && existingReport.length > 0)
+            // Send the JSON data as the response
+            return res.status(200).json(existingReport);
+
+        console.log("Could not find an existing report. Creating a new one...");
+
         // we want to query using those values
         const query = {
             year: year,
@@ -41,7 +78,7 @@ router.get('/', async function(req, res, next) {
 
         const costData = await Cost.find(query);
 
-        // create a report json and pre enters all categories arrays
+        // create a report json and pre enter all categories arrays
         const report = {};
         global.CATEGORIES.forEach(category => report[category] = []);
 
@@ -50,6 +87,9 @@ router.get('/', async function(req, res, next) {
             const category = reportCost.category;
             report[category].push({day: reportCost.day, description: reportCost.description, sum: reportCost.sum});
         });
+
+        // if this fails we continue as usual and won't fail the rest of the code.
+        saveExistingReport(report, month, year);
 
         // Send the JSON data as the response
         res.status(200).json(report);
