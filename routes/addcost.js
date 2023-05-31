@@ -21,7 +21,8 @@ async function validateParams(user_id, year, month, day, description, category, 
     !sum && 'sum parameter is missing',
     user_id && !(await checkUserExistence(user_id)) && 'user_id not found',
     category && !global.CATEGORIES.includes(category) && `category ${category} is not valid`,
-    day && month && year && !isValidDate(year, month, day) && 'date is not valid'
+    day && month && year && !isValidDate(year, month, day) && 'date is not valid',
+      sum && typeof sum !== 'number' && 'sum must be a number'
   ].filter(Boolean);
 }
 
