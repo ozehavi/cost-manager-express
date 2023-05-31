@@ -43,7 +43,7 @@ router.get('/', async function(req, res, next) {
 
         // create a report json and pre enters all categories arrays
         const report = {};
-        global.categories.forEach(category => report[category] = []);
+        global.CATEGORIES.forEach(category => report[category] = []);
 
         // Iterate over the cost data and populate the categories in the report
         costData.forEach(reportCost => {
