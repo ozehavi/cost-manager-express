@@ -10,7 +10,7 @@ const costItemSchema = new mongoose.Schema({
     day: Number,
     description: String,
     sum: Number
-});
+}, { _id: false });
 
 // Define the reportCostSchema schema using Mongoose
 const reportCostSchema = new mongoose.Schema({
