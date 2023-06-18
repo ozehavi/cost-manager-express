@@ -6,8 +6,8 @@ Ilya Yaverbaum ID: 324516673
 const express = require('express');
 const router = express.Router();
 const { isValidDate, checkUserExistence } = require('../utils');
-const {Cost} = require("../models/cost");
-const {CostReport} = require("../models/costReport");
+const {Cost} = require('../models/cost');
+const {CostReport} = require('../models/costReport');
 
 // Validates all params
 async function validateParams(userId, year, month, day, description, category, sum) {
@@ -70,16 +70,14 @@ function generateNumericUUID() {
   return parseInt(uuid);
 }
 
-
 router.post('/', async function (req, res, next) {
   try {
     const {user_id, year, month, day, description, category, sum} = req.body;
 
     // Check if any of the parameters are not empty and valid
     const errors = await validateParams(user_id, year, month, day, description, category, sum);
-    if (errors.length > 0) {
+    if (errors.length > 0)
       return res.status(400).json({errors: errors.join(' ,')});
-    }
 
     let newCost = new Cost({
       id: generateNumericUUID(), // generating a unique id
@@ -111,7 +109,6 @@ router.post('/', async function (req, res, next) {
     // Handle any errors that occur during the retrieval process
     res.status(500).json({error: err});
   }
-
 });
 
 module.exports = router;

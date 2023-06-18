@@ -5,14 +5,16 @@ Ilya Yaverbaum ID: 324516673
 */
 const express = require('express');
 const router = express.Router();
-const {Cost} = require("../models/cost");
-const {checkUserExistence} = require("../utils");
-const {CostReport} = require("../models/costReport");
+const {Cost} = require('../models/cost');
+const {checkUserExistence} = require('../utils');
+const {CostReport} = require('../models/costReport');
 const url = require('url');
 
 async function validateParams(userId, year, month) {
+    // validate year and month range
     const validYear = year > 1900 && year < 2050;
     const validMonth =  month > 0 && month < 13;
+    // check user id, year and month params existence and validations
     return [
         !userId && 'userId parameter is missing or not a number',
         !year && 'year parameter is missing or not a number',
@@ -71,13 +73,13 @@ router.get('/', async function(req, res, next) {
         }
 
         const existingReport = await getExistingReport(month, year);
-        // if can find an existing report we will return it.
+        // if we can find an existing report we will return it.
         if(existingReport && existingReport.length > 0) {
             // Send the JSON data as the response -getting more than one report is not possible but anyway we get the first one
             return res.status(200).json(existingReport[0]);
         }
 
-        console.log("Could not find an existing report. Creating a new one...");
+        console.log('Could not find an existing report. Creating a new one...');
 
         // we want to query using those values
         const query = {

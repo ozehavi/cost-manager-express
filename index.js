@@ -4,8 +4,8 @@ Oren Zehavi ID: 315940429
 Ilya Yaverbaum ID: 324516673
 */
 // Import packages
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require('express');
+const mongoose = require('mongoose');
 const homeRouter = require('./routes/home');
 const addCostRouter = require('./routes/addcost');
 const reportRouter = require('./routes/report');
